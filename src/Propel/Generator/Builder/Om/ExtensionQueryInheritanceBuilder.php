@@ -82,8 +82,8 @@ class ExtensionQueryInheritanceBuilder extends AbstractOMBuilder
         $tableDesc = $table->getDescription();
 
         $baseBuilder = $this->getNewQueryInheritanceBuilder($this->getChild());
-        $this->declareClassFromBuilder($baseBuilder);
-        $baseClassname = $baseBuilder->getClassname();
+        $baseClassname = 'Base' . $baseBuilder->getClassname();
+        $this->declareClassNamespace($baseBuilder->getClassname() . ' as ' . $baseClassname, $baseBuilder->getNamespace());
 
         $script .= "
 

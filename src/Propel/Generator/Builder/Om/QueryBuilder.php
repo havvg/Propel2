@@ -30,7 +30,7 @@ class QueryBuilder extends AbstractOMBuilder
      */
     public function getPackage()
     {
-        return parent::getPackage() . ".Om";
+        return parent::getPackage() . ".Base";
     }
 
     public function getNamespace()
