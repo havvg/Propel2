@@ -97,7 +97,7 @@ class QueryBuilderTest extends BookstoreTestBase
         $this->assertEquals('Propel\Runtime\Query\ModelCriteria', $method->getDeclaringClass()->getName(), 'BaseQuery does not override basePreSelect() by default');
 
         $method = new ReflectionMethod('\Propel\Tests\Bookstore\Behavior\Table3Query', 'basePreSelect');
-        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Om\BaseTable3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePreSelect() when a behavior is registered');
+        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Base\Table3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePreSelect() when a behavior is registered');
     }
 
     public function testBasePreDelete()
@@ -106,7 +106,7 @@ class QueryBuilderTest extends BookstoreTestBase
         $this->assertEquals('Propel\Runtime\Query\ModelCriteria', $method->getDeclaringClass()->getName(), 'BaseQuery does not override basePreDelete() by default');
 
         $method = new ReflectionMethod('\Propel\Tests\Bookstore\Behavior\Table3Query', 'basePreDelete');
-        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Om\BaseTable3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePreDelete() when a behavior is registered');
+        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Base\Table3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePreDelete() when a behavior is registered');
     }
 
     public function testBasePostDelete()
@@ -115,7 +115,7 @@ class QueryBuilderTest extends BookstoreTestBase
         $this->assertEquals('Propel\Runtime\Query\ModelCriteria', $method->getDeclaringClass()->getName(), 'BaseQuery does not override basePostDelete() by default');
 
         $method = new ReflectionMethod('\Propel\Tests\Bookstore\Behavior\Table3Query', 'basePostDelete');
-        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Om\BaseTable3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePostDelete() when a behavior is registered');
+        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Base\Table3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePostDelete() when a behavior is registered');
     }
 
     public function testBasePreUpdate()
@@ -124,7 +124,7 @@ class QueryBuilderTest extends BookstoreTestBase
         $this->assertEquals('Propel\Runtime\Query\ModelCriteria', $method->getDeclaringClass()->getName(), 'BaseQuery does not override basePreUpdate() by default');
 
         $method = new ReflectionMethod('\Propel\Tests\Bookstore\Behavior\Table3Query', 'basePreUpdate');
-        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Om\BaseTable3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePreUpdate() when a behavior is registered');
+        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Base\Table3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePreUpdate() when a behavior is registered');
     }
 
     public function testBasePostUpdate()
@@ -133,7 +133,7 @@ class QueryBuilderTest extends BookstoreTestBase
         $this->assertEquals('Propel\Runtime\Query\ModelCriteria', $method->getDeclaringClass()->getName(), 'BaseQuery does not override basePostUpdate() by default');
 
         $method = new ReflectionMethod('\Propel\Tests\Bookstore\Behavior\Table3Query', 'basePostUpdate');
-        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Om\BaseTable3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePostUpdate() when a behavior is registered');
+        $this->assertEquals('Propel\Tests\Bookstore\Behavior\Base\Table3Query', $method->getDeclaringClass()->getName(), 'BaseQuery overrides basePostUpdate() when a behavior is registered');
     }
 
     public function testQuery()
@@ -154,7 +154,7 @@ class QueryBuilderTest extends BookstoreTestBase
     public function testFindPk()
     {
         $method = new ReflectionMethod('\Propel\Tests\Bookstore\BookQuery', 'findPk');
-        $this->assertEquals('Propel\Tests\Bookstore\Om\BaseBookQuery', $method->getDeclaringClass()->getName(), 'BaseQuery overrides findPk()');
+        $this->assertEquals('Propel\Tests\Bookstore\Base\BookQuery', $method->getDeclaringClass()->getName(), 'BaseQuery overrides findPk()');
     }
 
     public function testFindPkReturnsCorrectObjectForSimplePrimaryKey()
@@ -274,7 +274,7 @@ class QueryBuilderTest extends BookstoreTestBase
     public function testFindPks()
     {
         $method = new ReflectionMethod('\Propel\Tests\Bookstore\BookQuery', 'findPks');
-        $this->assertEquals('Propel\Tests\Bookstore\Om\BaseBookQuery', $method->getDeclaringClass()->getName(), 'BaseQuery overrides findPks()');
+        $this->assertEquals('Propel\Tests\Bookstore\Base\BookQuery', $method->getDeclaringClass()->getName(), 'BaseQuery overrides findPks()');
     }
 
     public function testFindPksSimpleKey()

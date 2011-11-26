@@ -49,9 +49,9 @@ class NestedSetBehaviorObjectBuilderModifier
     protected function setBuilder($builder)
     {
         $this->builder = $builder;
-        $this->objectClassname = $builder->getStubObjectBuilder()->getClassname();
-        $this->queryClassname = $builder->getStubQueryBuilder()->getClassname();
-        $this->peerClassname = $builder->getStubPeerBuilder()->getClassname();
+        $this->objectClassname = $builder->getObjectClassname();
+        $this->queryClassname = $builder->getQueryClassname();
+        $this->peerClassname = $builder->getPeerClassname();
     }
 
     /*
@@ -63,7 +63,7 @@ class NestedSetBehaviorObjectBuilderModifier
 
     public function objectAttributes($builder)
     {
-        $objectClassname = $builder->getStubObjectBuilder()->getClassname();
+        $objectClassname = $builder->getObjectClassname();
 
         return "
 /**
@@ -89,8 +89,8 @@ protected \$aNestedSetParent = null;
 
     public function preSave($builder)
     {
-        $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-        $queryClassname = $builder->getStubQueryBuilder()->getClassname();
+        $peerClassname = $builder->getPeerClassname();
+        $queryClassname = $builder->getQueryClassname();
 
         $script = "if (\$this->isNew() && \$this->isRoot()) {
     // check if no other root exist in, the tree
@@ -123,7 +123,7 @@ protected \$aNestedSetParent = null;
 
     public function preDelete($builder)
     {
-        $peerClassname = $builder->getStubPeerBuilder()->getClassname();
+        $peerClassname = $builder->getPeerClassname();
 
         return "if (\$this->isRoot()) {
     throw new PropelException('Deletion of a root node is disabled for nested sets. Use $peerClassname::deleteTree(" . ($this->behavior->useScope() ? '$scope' : '') . ") instead to delete an entire tree');
@@ -137,7 +137,7 @@ if (\$this->isInTree()) {
 
     public function postDelete($builder)
     {
-        $peerClassname = $builder->getStubPeerBuilder()->getClassname();
+        $peerClassname = $builder->getPeerClassname();
 
         return "if (\$this->isInTree()) {
     // fill up the room that was used by the node

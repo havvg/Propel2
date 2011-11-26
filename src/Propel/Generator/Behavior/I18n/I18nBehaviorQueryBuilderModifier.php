@@ -46,7 +46,7 @@ class I18nBehaviorQueryBuilderModifier
         $fk = $this->behavior->getI18nForeignKey();
 
         return $this->behavior->renderTemplate('queryJoinI18n', array(
-            'queryClass'       => $this->builder->getStubQueryBuilder()->getClassname(),
+            'queryClass'       => $this->builder->getQueryClassname(),
             'defaultLocale'    => $this->behavior->getDefaultLocale(),
             'i18nRelationName' => $this->builder->getRefFKPhpNameAffix($fk),
             'localeColumn'     => $this->behavior->getLocaleColumn()->getPhpName(),
@@ -58,7 +58,7 @@ class I18nBehaviorQueryBuilderModifier
         $fk = $this->behavior->getI18nForeignKey();
 
         return $this->behavior->renderTemplate('queryJoinWithI18n', array(
-            'queryClass'       => $this->builder->getStubQueryBuilder()->getClassname(),
+            'queryClass'       => $this->builder->getQueryClassname(),
             'defaultLocale'    => $this->behavior->getDefaultLocale(),
             'i18nRelationName' => $this->builder->getRefFKPhpNameAffix($fk),
         ));
@@ -70,7 +70,7 @@ class I18nBehaviorQueryBuilderModifier
         $fk = $this->behavior->getI18nForeignKey();
 
         return $this->behavior->renderTemplate('queryUseI18nQuery', array(
-            'queryClass'           => $this->builder->getNewStubQueryBuilder($i18nTable)->getClassname(),
+            'queryClass'           => $this->builder->getClassnameFromBuilder($this->builder->getNewStubQueryBuilder($i18nTable)),
             'namespacedQueryClass' => $this->builder->getNewStubQueryBuilder($i18nTable)->getFullyQualifiedClassname(),
             'defaultLocale'        => $this->behavior->getDefaultLocale(),
             'i18nRelationName'     => $this->builder->getRefFKPhpNameAffix($fk),
