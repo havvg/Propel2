@@ -10,76 +10,22 @@
 
 namespace Propel\Generator\Manager;
 
+use Propel\Generator\Model\Database;
 use Propel\Generator\Exception\BuildException;
 
 /**
  * @author	William Durand <william.durand1@gmail.com>
+ * @author  Toni Uebernickel <tuebernickel@gmail.com>
  */
 class GraphvizManager extends AbstractManager
 {
     public function build()
     {
-        $count = 0;
-        $dotSyntax = '';
-
-        // file we are going to create
-        $dbMaps = $this->getDataModelDbMap();
-
         foreach ($this->getDataModels() as $dataModel) {
-            $dotSyntax .= "digraph G {\n";
-
             foreach ($dataModel->getDatabases() as $database) {
                 $this->log("db: " . $database->getName());
-
-                //print the tables
-                foreach ($database->getTables() as $tbl) {
-                    $this->log("\t+ " . $tbl->getName());
-                    $dotSyntax .= 'node'.$tbl->getName().' [label="{<table>'.$tbl->getName().'|<cols>';
-
-                    foreach ($tbl->getColumns() as $col) {
-                        $dotSyntax .= $col->getName() . ' (' . $col->getType()  . ')';
-                        if (count($col->getForeignKeys()) > 0) {
-                            $dotSyntax .= ' [FK]';
-                        } elseif ($col->isPrimaryKey()) {
-                            $dotSyntax .= ' [PK]';
-                        }
-                        $dotSyntax .= '\l';
-                    }
-                    $dotSyntax .= '}", shape=record];';
-                    $dotSyntax .= "\n";
-
-                    $count++;
-                }
-
-                //print the relations
-                $count = 0;
-                $dotSyntax .= "\n";
-                foreach ($database->getTables() as $tbl) {
-                    foreach ($tbl->getColumns() as $col) {
-                        $fk = $col->getForeignKeys();
-
-                        if (0 === count($fk)|| null === $fk) {
-                            continue;
-                        }
-
-                        if (1 < count($fk)) {
-                            throw new BuildException('Not sure what to do here...'); // WTF?
-                        }
-
-                        $fk = $fk[0];   // try first one
-                        $dotSyntax .= 'node'.$tbl->getName();
-                        $dotSyntax .= ':cols -> node'.$fk->getForeignTableName();
-                        $dotSyntax .= ':table [label="' . $col->getName() . '=' . implode(',', $fk->getForeignColumns()) . ' "];';
-                        $dotSyntax .= "\n";
-                    }
-
-                    $count++;
-                }
+                $this->writeDot(self::createDotSyntax($database), $this->getWorkingDirectory(), $database->getName());
             }
-
-            $dotSyntax .= "}\n";
-
-            $this->writeDot($dotSyntax, $database->getName());
         }
     }
 
@@ -90,5 +36,50 @@ class GraphvizManager extends AbstractManager
         $this->log("Writing dot file to " . $file);
 
         file_put_contents($file, $dotSyntax);
+    }
+
+    /**
+     * Create the DOT syntax for a given databases.
+     *
+     * @param Database $database
+     *
+     * @return string The DOT syntax created.
+     */
+    public static function createDotSyntax(Database $database)
+    {
+        $dotSyntax = '';
+
+        // table nodes
+        foreach ($database->getTables() as $table) {
+            $columnsSyntax = '';
+            foreach ($table->getColumns() as $column) {
+                $attributes = '';
+
+                if (count($column->getForeignKeys()) > 0) {
+                    $attributes .= ' [FK]';
+                }
+
+                if ($column->isPrimaryKey()) {
+                    $attributes .= ' [PK]';
+                }
+
+                $columnsSyntax .= sprintf('%s (%s)%s\l', $column->getName(), $column->getType(), $attributes);
+            }
+
+            $nodeSyntax = sprintf('node%s [label="{<table>%s|<cols>%s}", shape=record];', $table->getName(), $table->getName(), $columnsSyntax);
+            $dotSyntax .= "$nodeSyntax\n";
+        }
+
+        // relation nodes
+        foreach ($database->getTables() as $table) {
+            foreach ($table->getColumns() as $column) {
+                foreach ($column->getForeignKeys() as $fk) {
+                    $relationSyntax = sprintf('node%s:cols -> node%s:table [label="%s=%s"];', $table->getName(), $fk->getForeignTableName(), $column->getName(), implode(',', $fk->getForeignColumns()));
+                    $dotSyntax .= "$relationSyntax\n";
+                }
+            }
+        }
+
+        return sprintf("digraph G {\n%s}\n", $dotSyntax);
     }
 }
