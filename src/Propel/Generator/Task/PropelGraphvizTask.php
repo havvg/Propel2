@@ -11,20 +11,22 @@
 namespace Propel\Generator\Task;
 
 use Propel\Generator\Model\AppData;
+use Propel\Generator\Util\DotGenerator;
 
 use \PhingFile;
 
 /**
  * A task to generate Graphviz dot files from Propel datamodel.
  *
- * @author     Mark Kimsal
+ * @author Mark Kimsal
+ * @author Toni Uebernickel <tuebernickel@gmail.com>
  */
 class PropelGraphvizTask extends AbstractPropelDataModelTask
 {
-
     /**
      * The properties file that maps an SQL file to a particular database.
-     * @var        PhingFile
+     *
+     * @var PhingFile
      */
     private $sqldbmap;
 
@@ -41,6 +43,7 @@ class PropelGraphvizTask extends AbstractPropelDataModelTask
 
     /**
      * Set the sqldbmap.
+     *
      * @param      PhingFile $sqldbmap The db map.
      */
     public function setOutputDirectory(PhingFile $out)
@@ -54,6 +57,7 @@ class PropelGraphvizTask extends AbstractPropelDataModelTask
 
     /**
      * Set the sqldbmap.
+     *
      * @param      PhingFile $sqldbmap The db map.
      */
     public function setSqlDbMap(PhingFile $sqldbmap)
@@ -63,6 +67,7 @@ class PropelGraphvizTask extends AbstractPropelDataModelTask
 
     /**
      * Get the sqldbmap.
+     *
      * @return     PhingFile $sqldbmap.
      */
     public function getSqlDbMap()
@@ -72,7 +77,8 @@ class PropelGraphvizTask extends AbstractPropelDataModelTask
 
     /**
      * Set the database name.
-     * @param      string $database
+     *
+     * @param string $database
      */
     public function setDatabase($database)
     {
@@ -81,87 +87,23 @@ class PropelGraphvizTask extends AbstractPropelDataModelTask
 
     /**
      * Get the database name.
-     * @return     string
+     *
+     * @return string
      */
     public function getDatabase()
     {
         return $this->database;
     }
 
-
     public function main()
     {
-
-        $count = 0;
-
-        $dotSyntax = '';
-
-        // file we are going to create
-
-        $dbMaps = $this->getDataModelDbMap();
-
         foreach ($this->getDataModels() as $dataModel) {
-
-            $dotSyntax .= "digraph G {\n";
             foreach ($dataModel->getDatabases() as $database) {
-
                 $this->log("db: " . $database->getName());
-
-                //print the tables
-                foreach ($database->getTables() as $tbl) {
-
-                    $this->log("\t+ " . $tbl->getName());
-
-                    ++$count;
-                    $dotSyntax .= 'node'.$tbl->getName().' [label="{<table>'.$tbl->getName().'|<cols>';
-
-                    foreach ($tbl->getColumns() as $col) {
-                        $dotSyntax .= $col->getName() . ' (' . $col->getType()  . ')';
-                        if (count($col->getForeignKeys()) > 0) {
-                            $dotSyntax .= ' [FK]';
-                        } elseif ($col->isPrimaryKey()) {
-                            $dotSyntax .= ' [PK]';
-                        }
-                        $dotSyntax .= '\l';
-                    }
-                    $dotSyntax .= '}", shape=record];';
-                    $dotSyntax .= "\n";
-                }
-
-                //print the relations
-
-                $count = 0;
-                $dotSyntax .= "\n";
-                foreach ($database->getTables() as $tbl) {
-                    ++$count;
-
-                    foreach ($tbl->getColumns() as $col) {
-                        $fk = $col->getForeignKeys();
-                        if (count($fk) == 0 or $fk === null) {
-                            continue;
-                        }
-                        if (count($fk) > 1) {
-                            throw(new Exception("not sure what to do here..."));
-                        }
-                        $fk = $fk[0];   // try first one
-                        $dotSyntax .= 'node'.$tbl->getName() .':cols -> node'.$fk->getForeignTableName() . ':table [label="' . $col->getName() . '=' . implode(',', $fk->getForeignColumns()) . ' "];';
-                        $dotSyntax .= "\n";
-                    }
-                }
-
-
-
-            } // foreach database
-            $dotSyntax .= "}\n";
-
-            $this->writeDot($dotSyntax,$this->outDir,$database->getName());
-
-        $dotSyntax = '';
-
-        } //foreach datamodels
-
-    } // main()
-
+                $this->writeDot(DotGenerator::create($database), $this->outDir, $database->getName());
+            }
+        }
+    }
 
     /**
      * probably insecure
