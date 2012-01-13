@@ -13,9 +13,11 @@ namespace Propel\Generator\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 use Propel\Generator\Exception\RuntimeException;
+use Propel\Generator\Exception\InvalidArgumentException;
 
 /**
  * @author William Durand <william.durand1@gmail.com>
@@ -26,6 +28,8 @@ abstract class AbstractCommand extends Command
 
     const DEFAULT_PLATFORM          = 'MysqlPlatform';
 
+    protected $connections = array();
+
     /**
      * {@inheritdoc}
      */
@@ -34,7 +38,24 @@ abstract class AbstractCommand extends Command
         $this
             ->addOption('platform',  null, InputOption::VALUE_REQUIRED,  'The platform', self::DEFAULT_PLATFORM)
             ->addOption('input-dir', null, InputOption::VALUE_REQUIRED,  'The input directory', self::DEFAULT_INPUT_DIRECTORY)
+            ->addOption('con', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The name of the connection N.', array())
+            ->addOption('dsn', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED, 'The dsn for connection N.', array())
             ;
+    }
+
+    protected function initialize(InputInterface $input, OutputInterface $output)
+    {
+        if (count($input->getOption('con')) !== count($input->getOption('dsn'))) {
+            throw new InvalidArgumentException(sprintf(
+                'The amount of connection "%d" does not match that of given dsn "%d".',
+                count($input->getOption('con')), count($input->getOption('dsn'))
+            ));
+        }
+
+        $dsnList = $input->getOption('dsn');
+        foreach ($input->getOption('con') as $idx => $name) {
+            $this->connections[$name] = $dsnList[$idx];
+        }
     }
 
     protected function getBuildProperties($file)
